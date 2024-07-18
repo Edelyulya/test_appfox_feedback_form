@@ -5,21 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Форма обратной связи</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', sans-serif;
             margin: 20px;
+            background: linear-gradient(135deg, #000428, #004e92, #5400b3);
+            color: white;
         }
         .form-group {
             margin-bottom: 15px;
         }
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
         .form-group input, .form-group textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            color: #333;
         }
         .form-group .error {
             color: red;
@@ -40,7 +48,7 @@
             background-color: #fefefe;
             margin: 15% auto;
             padding: 20px;
-            border: 1px solid #888;
+            border: 2px solid #888;
             width: 80%;
             max-width: 500px;
         }
@@ -56,10 +64,25 @@
             text-decoration: none;
             cursor: pointer;
         }
+        #successModal p {
+            color: black;
+        }
+        button {
+            font-family: 'Nunito', sans-serif;
+            padding: 10px 15px;
+            background-color: #5400b3;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #004e92;
+        }
     </style>
 </head>
 <body>
-    <h1>Поделитесь своим мнением</h1>
+    <h1>Поделитесь своим мением</h1>
     <form id="feedbackForm">
         <div class="form-group">
             <label for="firstName">Имя:</label>
@@ -73,7 +96,7 @@
         </div>
         <div class="form-group">
             <label for="phone">Ваш телефон:</label>
-            <input type="text" id="phone" placeholder="Ваш номер телефона">
+            <input type="text" id="phone" placeholder="Ваш телефонный номер">
             <div class="error" id="phoneError"></div>
         </div>
         <div class="form-group">
@@ -81,13 +104,13 @@
             <textarea id="message" placeholder="Поделитесь своим мнением"></textarea>
             <div class="error" id="messageError"></div>
         </div>
-        <button type="submit">Отправить</button>
+        <button type="submit">Submit</button>
     </form>
 
     <div id="successModal">
         <div class="modal-content">
             <span class="close" id="closeModal">&times;</span>
-            <p>Спасибо, мы получили ваше сообщение</p>
+            <p>Спасибо, мы отправили ваше сообщение</p>
         </div>
     </div>
 
@@ -106,8 +129,8 @@
         const successModal = document.getElementById('successModal');
         const closeModal = document.getElementById('closeModal');
 
-        const namePattern = /^[a-zA-Zа-яА-ЯёЁ]{2,30}$/;
-        const phonePattern = /^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
+        const namePattern = /^[a-zA-Zа-яА-ЯёЁ]{2,15}$/;
+        const phonePattern = /^\+7\d{10}$/;
 
         function validateInput(input, pattern, emptyMessage, invalidMessage, errorElement) {
             if (input.value.trim() === '') {
@@ -135,7 +158,7 @@
                 isValid = false;
             }
 
-            const phoneValue = '+7' + phone.value.replace(/\D/g, '');
+            const phoneValue = phone.value;
             if (!validateInput({ value: phoneValue }, phonePattern, 'пожалуйста, заполните поле', 'пожалуйста, укажите корректный номер телефона', phoneError)) {
                 isValid = false;
             }
@@ -175,8 +198,10 @@
         }
 
         phone.addEventListener('input', function(event) {
-            const x = phone.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-            phone.value = '+7(' + x[1] + (x[2] ? ')' + x[2] : '') + (x[3] ? '-' + x[3] : '') + (x[4] ? '-' + x[4] : '');
+            phone.value = phone.value.replace(/[^\d\+]/g, '').replace(/^(\+7)(\d{20}).*/, '$2$0');
+            if (!phone.value.startsWith('+7')) {
+                phone.value = '+7' + phone.value.replace(/^\+*/, '');
+            }
         });
     </script>
 </body>
